@@ -14,18 +14,18 @@ namespace JsonBenchmark
         }
     }
 
-    [MemoryDiagnoser]
-    [RankColumn]
-    public class JsonComparisons
-    {
-        private readonly JsonSerializerOptions _jsonOptions;
-        private readonly List<Produto> _produtos;
-
-        public JsonComparisons()
+        [MemoryDiagnoser]
+        [RankColumn]
+        public class JsonComparisons
         {
-            _jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+            private readonly JsonSerializerOptions _jsonOptions;
+            private readonly List<Produto> _produtos;
 
-            _produtos = new List<Produto>()
+            public JsonComparisons()
+            {
+                _jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+
+                _produtos = new List<Produto>()
                 {
                     new Produto()
                     {
@@ -33,7 +33,7 @@ namespace JsonBenchmark
                         Nome = "Name 1",
                         Categoria = "Category 1",
                         Descricao= "Description 1",
-                        Preco = 1,
+                        Preco = 1,                        
                     },
                     new Produto()
                     {
@@ -41,7 +41,7 @@ namespace JsonBenchmark
                         Nome = "Name 2",
                         Categoria = "Category 2",
                         Descricao= "Description 2",
-                        Preco = 2,
+                        Preco = 2,                        
                     },
                     new Produto()
                     {
@@ -52,18 +52,19 @@ namespace JsonBenchmark
                         Preco = 3,
                     }
                 };
+            }
+
+            [Benchmark]
+            public string Newtonsoft() => JsonConvert.SerializeObject(_produtos);
+
+            [Benchmark]
+            public string SystemTextJson() => System.Text.Json.JsonSerializer.Serialize(_produtos, _jsonOptions);
+
+
+            [Benchmark]
+            public string SourceGenerator() => System.Text.Json.JsonSerializer.Serialize(_produtos, ProdutoGenerationContext.Default.ListProduto);
+
         }
-
-        [Benchmark]
-        public string Newtonsoft() => JsonConvert.SerializeObject(_produtos);
-
-        [Benchmark]
-        public string SystemTextJson() => System.Text.Json.JsonSerializer.Serialize(_produtos, _jsonOptions);
-
-
-        [Benchmark]
-        public string SourceGenerator() => System.Text.Json.JsonSerializer.Serialize(_produtos, ProdutoGenerationContext.Default.ListProduto);
-
     }
 
     public class Produto
